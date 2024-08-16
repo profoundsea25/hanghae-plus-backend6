@@ -5,6 +5,7 @@
 - 클린 아키텍처 적용
 - 모듈 설명
   - `bootstrap` : 스프링 애플리케이션 구동 모듈
+  - `common` : 도메인 모듈에 공통적으로 사용하는 클래스를 모은 모듈
   - `domain` : 각 도메인에 해당하는 모듈
     - `{도메인명}-adapter-in` : In Port
     - `{도메인명}-adapter-out` : Out Port

@@ -1,6 +1,7 @@
 rootProject.name = "prestudy-post"
 
 include(":bootstrap")
+include(":common")
 
 include(":domain:post:application")
 project(":domain:post:application").name = "post-application"
