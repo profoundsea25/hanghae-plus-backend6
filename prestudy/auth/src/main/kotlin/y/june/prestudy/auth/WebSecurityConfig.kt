@@ -14,12 +14,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.AccessDeniedHandler
+import org.springframework.security.web.access.intercept.AuthorizationFilter
 import y.june.prestudy.common.api.Response
 import y.june.prestudy.common.api.ResponseCode
+import y.june.prestudy.common.logger
 import java.nio.charset.StandardCharsets
 
 @Configuration
-class WebSecurityConfig {
+class WebSecurityConfig(
+    private val jwtValidateFilter: JwtValidateFilter
+) {
+    private val log = logger()
 
     companion object {
         val WHITE_LIST: Array<String> = arrayOf(
@@ -43,12 +48,16 @@ class WebSecurityConfig {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         return http
+            .csrf { it.disable() }
+            .formLogin { it.disable() }
+            .httpBasic { it.disable() }
             .authorizeHttpRequests {
                 it
                     .requestMatchers(*WHITE_LIST).permitAll()
                     .requestMatchers(PathRequest.toH2Console()).permitAll()
                     .anyRequest().authenticated()
             }
+            .addFilterBefore(jwtValidateFilter, AuthorizationFilter::class.java)
             .exceptionHandling {
                 it
                     .accessDeniedHandler(customAccessDeniedHandler)
@@ -61,14 +70,12 @@ class WebSecurityConfig {
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .logout { it.invalidateHttpSession(true) }
-            .formLogin { it.disable() }
-            .httpBasic { it.disable() }
-            .csrf { it.disable() }
             .build()
     }
 
     private val customAccessDeniedHandler: AccessDeniedHandler =
-        AccessDeniedHandler { _, response, _ ->
+        AccessDeniedHandler { _, response, accessDeniedException ->
+            log.debug("Forbidden Access", accessDeniedException)
             response.apply {
                 this.contentType = MediaType.APPLICATION_JSON_VALUE
                 this.status = HttpStatus.FORBIDDEN.value()
@@ -82,7 +89,8 @@ class WebSecurityConfig {
         }
 
     private val customAuthenticationEntryPoint: AuthenticationEntryPoint =
-        AuthenticationEntryPoint { _, response, _ ->
+        AuthenticationEntryPoint { _, response, authException ->
+            log.debug("Unauthorized Access", authException)
             response.apply {
                 this.contentType = MediaType.APPLICATION_JSON_VALUE
                 this.status = HttpStatus.UNAUTHORIZED.value()

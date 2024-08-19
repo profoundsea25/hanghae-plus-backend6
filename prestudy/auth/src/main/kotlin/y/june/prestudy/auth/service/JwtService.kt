@@ -16,9 +16,9 @@ import javax.crypto.SecretKey
 @Service
 class JwtService(
     @Value("\${jwt.secret}")
-    val secret: String,
+    private val secret: String,
     @Value("\${jwt.duration}")
-    val duration: Long,
+    private val duration: Long,
 ) {
     private val key: SecretKey
         get() = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
@@ -40,7 +40,7 @@ class JwtService(
             .compact()
     }
 
-    fun parseClaims(token: String): Claims? {
+    fun parseClaimsOrNull(token: String): Claims? {
         return runCatching {
             Jwts.parser()
                 .verifyWith(key)
@@ -52,7 +52,8 @@ class JwtService(
             ?.payload
     }
 
-    fun getUsername(token: String): String {
-        return parseClaims(token)?.get("username") as String? ?: throw BadRequestException(ResponseCode.INVALID_JWT)
+    fun extractUsername(claims: Claims?): String {
+        return claims?.get("username") as String?
+            ?: throw BadRequestException(ResponseCode.INVALID_JWT)
     }
 }
