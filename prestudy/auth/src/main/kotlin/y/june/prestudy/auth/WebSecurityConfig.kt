@@ -3,6 +3,7 @@ package y.june.prestudy.auth
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -69,30 +70,32 @@ class WebSecurityConfig(
     private val customAccessDeniedHandler: AccessDeniedHandler =
         AccessDeniedHandler { _, response, accessDeniedException ->
             log.debug("Forbidden Access", accessDeniedException)
-            response.apply {
-                this.contentType = MediaType.APPLICATION_JSON_VALUE
-                this.status = HttpStatus.FORBIDDEN.value()
-                this.characterEncoding = StandardCharsets.UTF_8.name()
-                this.writer.write(
-                    objectMapper().writeValueAsString(
-                        Response<Unit>(responseCode = ResponseCode.FORBIDDEN)
-                    )
-                )
-            }
+            response.customExceptionHandlingResponse(
+                httpStatus = HttpStatus.FORBIDDEN,
+                responseCode = ResponseCode.FORBIDDEN
+            )
         }
 
     private val customAuthenticationEntryPoint: AuthenticationEntryPoint =
         AuthenticationEntryPoint { _, response, authException ->
             log.debug("Unauthorized Access", authException)
-            response.apply {
-                this.contentType = MediaType.APPLICATION_JSON_VALUE
-                this.status = HttpStatus.UNAUTHORIZED.value()
-                this.characterEncoding = StandardCharsets.UTF_8.name()
-                this.writer.write(
-                    objectMapper().writeValueAsString(
-                        Response<Unit>(responseCode = ResponseCode.UNAUTHORIZED)
-                    )
-                )
-            }
+            response.customExceptionHandlingResponse(
+                httpStatus = HttpStatus.UNAUTHORIZED,
+                responseCode = ResponseCode.UNAUTHORIZED
+            )
         }
+
+    private fun HttpServletResponse.customExceptionHandlingResponse(
+        httpStatus: HttpStatus,
+        responseCode: ResponseCode,
+    ) {
+        this.contentType = MediaType.APPLICATION_JSON_VALUE
+        this.status = httpStatus.value()
+        this.characterEncoding = StandardCharsets.UTF_8.name()
+        this.writer.write(
+            objectMapper().writeValueAsString(
+                Response<Unit>(responseCode)
+            )
+        )
+    }
 }
