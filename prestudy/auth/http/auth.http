@@ -1,0 +1,19 @@
+### 회원가입
+POST http://localhost:8080/v1/sign-up
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "1234",
+  "role": "MEMBER"
+}
+
+
+### 로그인
+POST http://localhost:8080/v1/login
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "1234"
+}
