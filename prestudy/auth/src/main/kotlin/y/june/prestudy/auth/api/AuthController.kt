@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import y.june.prestudy.auth.AUTHORIZATION
+import y.june.prestudy.auth.BEARER
 import y.june.prestudy.auth.service.AuthService
 import y.june.prestudy.common.api.Response
 import y.june.prestudy.common.api.ok
@@ -21,7 +23,7 @@ class AuthController(
     fun login(@RequestBody command: LoginCommand, response: HttpServletResponse): Response<Unit> {
         authService
             .login(command)
-            .also { response.addHeader("Authorization", "Bearer $it") }
+            .also { response.addHeader(AUTHORIZATION, BEARER + it) }
         return ok()
     }
 }

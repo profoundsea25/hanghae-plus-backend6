@@ -5,8 +5,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 class Member(
-    val _username: String,
-    val _password: String,
+    @JvmField
+    val username: String,
+    @JvmField
+    val password: String,
     val role: Role,
 ) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
@@ -14,10 +16,10 @@ class Member(
     }
 
     override fun getPassword(): String {
-        return _password
+        return password
     }
 
     override fun getUsername(): String {
-        return _username
+        return username
     }
 }

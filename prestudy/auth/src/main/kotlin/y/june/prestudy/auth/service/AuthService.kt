@@ -30,8 +30,8 @@ class AuthService(
 
     private fun toMember(command: SignUpCommand): Member {
         return Member(
-            _username = command.username,
-            _password = passwordEncoder.encode(command.password),
+            username = command.username,
+            password = passwordEncoder.encode(command.password),
             role = command.role,
         )
     }

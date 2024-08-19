@@ -7,7 +7,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Component
-import org.springframework.util.AntPathMatcher
 import org.springframework.web.filter.OncePerRequestFilter
 import y.june.prestudy.auth.service.JwtService
 import y.june.prestudy.common.api.ResponseCode
@@ -19,15 +18,8 @@ class JwtValidateFilter(
     private val jwtService: JwtService,
 ) : OncePerRequestFilter() {
 
-    companion object {
-        const val AUTHORIZATION = "Authorization"
-        const val BEARER = "Bearer "
-        private val antPathMatcher = AntPathMatcher()
-    }
-
     override fun shouldNotFilter(request: HttpServletRequest): Boolean {
-        return WebSecurityConfig.WHITE_LIST
-            .any { antPathMatcher.match(it, request.requestURI.toString()) }
+        return WHITE_LIST.any { ANT_PATH_MATCHER.match(it, request.requestURI.toString()) }
     }
 
     override fun doFilterInternal(

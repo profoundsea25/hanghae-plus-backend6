@@ -17,8 +17,8 @@ class MemberJpaEntity(
 ) {
     fun toMember(): Member {
         return Member(
-            _username = this.username,
-            _password = this.password,
+            username = this.username,
+            password = this.password,
             role = this.role
         )
     }

@@ -26,13 +26,6 @@ class WebSecurityConfig(
 ) {
     private val log = logger()
 
-    companion object {
-        val WHITE_LIST: Array<String> = arrayOf(
-            "/v**/sign-up",
-            "/v**/login",
-        )
-    }
-
     @Bean
     fun passwordEncoder(): BCryptPasswordEncoder {
         return BCryptPasswordEncoder()

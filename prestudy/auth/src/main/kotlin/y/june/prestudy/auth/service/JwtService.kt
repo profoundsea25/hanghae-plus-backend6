@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service
 import y.june.prestudy.auth.model.Member
 import y.june.prestudy.common.api.ResponseCode
 import y.june.prestudy.common.exception.BadRequestException
+import y.june.prestudy.common.logger
 import java.time.ZonedDateTime
 import java.util.*
 import javax.crypto.SecretKey
@@ -20,6 +21,12 @@ class JwtService(
     @Value("\${jwt.duration}")
     private val duration: Long,
 ) {
+    private val log = logger()
+    
+    companion object {
+        private const val FIELD_USERNAME = "username"
+    }
+
     private val key: SecretKey
         get() = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
 
@@ -27,13 +34,7 @@ class JwtService(
     fun createToken(member: Member): String {
         val now: ZonedDateTime = ZonedDateTime.now()
         return Jwts.builder()
-            .claims(
-                mapOf(
-                    "username" to member.username,
-                    "password" to member.password,
-                    "role" to member.role.name,
-                )
-            )
+            .claims(mapOf(FIELD_USERNAME to member.username))
             .issuedAt(Date.from(now.toInstant()))
             .expiration(Date.from(now.plusSeconds(duration).toInstant()))
             .signWith(key)
@@ -47,13 +48,13 @@ class JwtService(
                 .build()
                 .parseSignedClaims(token)
         }
-            .onFailure { throw BadRequestException(ResponseCode.INVALID_JWT) }
+            .onFailure { log.debug("Error Occurred When JWT Parsing Claims", it) }
             .getOrNull()
             ?.payload
     }
 
     fun extractUsername(claims: Claims?): String {
-        return claims?.get("username") as String?
+        return claims?.get(FIELD_USERNAME) as String?
             ?: throw BadRequestException(ResponseCode.INVALID_JWT)
     }
 }
