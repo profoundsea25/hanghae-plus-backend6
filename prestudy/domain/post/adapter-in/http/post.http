@@ -1,0 +1,10 @@
+### 만들기
+POST http://localhost:8080/v1/post/create
+Content-Type: application/json
+
+{
+  "title": "테스트 제목",
+  "author": "테스트 글쓴이",
+  "content": "테스트 내용",
+  "password": "test"
+}
