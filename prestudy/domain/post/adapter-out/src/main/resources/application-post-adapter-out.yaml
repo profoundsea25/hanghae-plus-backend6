@@ -1,6 +1,6 @@
 spring:
   datasource:
-    hikari:
+    post-adapter-out:
       jdbc-url: jdbc:h2:mem:prestudy
       username: sa
       password:

@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource
 import jakarta.persistence.EntityManagerFactory
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
 import org.hibernate.cfg.AvailableSettings
+import org.hibernate.tool.schema.Action
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -23,7 +24,7 @@ const val POST_ENTITY_MANAGER_FACTORY = "postEntityManagerFactory"
 const val POST_TRANSACTION_MANAGER = "postTransactionManager"
 
 @Configuration
-@ConfigurationProperties(prefix = "spring.datasource.hikari")
+@ConfigurationProperties(prefix = "spring.datasource.post-adapter-out")
 @EnableJpaRepositories(
     basePackages = ["y.june.prestudy.post.persistence"],
     entityManagerFactoryRef = POST_ENTITY_MANAGER_FACTORY,
@@ -48,7 +49,7 @@ class PostJpaConfig : HikariConfig() {
                 this.setPackagesToScan("y.june.prestudy.post.persistence.entity")
                 this.jpaPropertyMap = mapOf(
                     // yaml 파일에 명시하면 적용되지 않으므로, 추가 프로퍼티가 필요한 경우 여기에 명시
-                    AvailableSettings.HBM2DDL_AUTO to "create",
+                    AvailableSettings.HBM2DDL_AUTO to Action.ACTION_CREATE_THEN_DROP,
                     AvailableSettings.PHYSICAL_NAMING_STRATEGY to CamelCaseToUnderscoresNamingStrategy::class.java.name,
                     AvailableSettings.SHOW_SQL to true,
                     AvailableSettings.FORMAT_SQL to true,
