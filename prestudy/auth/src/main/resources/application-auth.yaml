@@ -11,4 +11,4 @@ spring:
       enabled: true
 jwt:
   duration: 7 # 3600 # (1시간)
-  secret: testJwtSecret
+  secret: sldkfjwioejfskldjfopqfjopqpwr9fu90qru1029enfcv9032uq39rufq3pr903f9ui0dsufqvsxiodvcjko123knro3irf90

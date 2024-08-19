@@ -1,5 +1,6 @@
 package y.june.prestudy.auth.api
 
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -17,7 +18,10 @@ class AuthController(
     }
 
     @PostMapping("/v1/login")
-    fun login(@RequestBody command: LoginCommand) {
-
+    fun login(@RequestBody command: LoginCommand, response: HttpServletResponse): Response<Unit> {
+        authService
+            .login(command)
+            .also { response.addHeader("Authorization", "Bearer $it") }
+        return ok()
     }
 }
