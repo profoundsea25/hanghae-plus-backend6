@@ -2,4 +2,5 @@ spring:
   profiles:
     include:
       - post-adapter-out
-      - auth
+      - auth-application
+      - auth-adapter-out
