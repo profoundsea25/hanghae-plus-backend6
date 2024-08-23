@@ -24,8 +24,7 @@ class JwtProvider(
 ) {
     private val log = logger()
 
-    private val key: SecretKey
-        get() = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
+    private val key: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
 
     fun generate(
         member: Member,
