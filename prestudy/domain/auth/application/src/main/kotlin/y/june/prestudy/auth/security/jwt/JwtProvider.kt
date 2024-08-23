@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import y.june.prestudy.auth.FIELD_USERNAME
 import y.june.prestudy.auth.model.Member
+import y.june.prestudy.common.api.ResponseCode
+import y.june.prestudy.common.exception.BadRequestException
 import y.june.prestudy.common.logger
 import java.time.ZonedDateTime
 import java.util.*
@@ -37,16 +39,22 @@ class JwtProvider(
             .compact()
     }
 
-    fun parse(token: String): Claims {
+    private fun parse(token: String): Claims {
         return runCatching {
             Jwts.parser()
                 .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
         }
-            .onFailure { log.info("Error Occurred When JWT Parsing Claims") }
-            .getOrThrow()
+            .onFailure { log.info("Error Occurred When JWT Parsing Claims", it) }
+            .getOrElse { throw BadRequestException(ResponseCode.INVALID_JWT) }
             .payload
+    }
+
+    fun getUsername(token: String): String {
+        return parse(token)
+            .get(FIELD_USERNAME, String::class.java)
+            ?: throw BadRequestException(ResponseCode.INVALID_JWT)
     }
 
 }
