@@ -19,7 +19,7 @@ class AuthService(
 ) : SignUpUseCase,
     LoginUseCase {
 
-    override fun singUp(command: SignUpCommand) {
+    override fun signUp(command: SignUpCommand) {
         checkDuplicatedUsername(command.username)
         saveMemberOutPort.save(
             Member(
