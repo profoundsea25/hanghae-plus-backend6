@@ -3,7 +3,10 @@ package y.june.prestudy.auth.service
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import y.june.prestudy.auth.model.Member
-import y.june.prestudy.auth.port.`in`.*
+import y.june.prestudy.auth.port.`in`.LoginCommand
+import y.june.prestudy.auth.port.`in`.LoginUseCase
+import y.june.prestudy.auth.port.`in`.SignUpCommand
+import y.june.prestudy.auth.port.`in`.SignUpUseCase
 import y.june.prestudy.auth.port.out.LoadMemberOutPort
 import y.june.prestudy.auth.port.out.SaveMemberOutPort
 import y.june.prestudy.auth.security.jwt.JwtProvider
@@ -38,18 +41,13 @@ class AuthService(
     }
 
     override fun login(command: LoginCommand): String {
-        return loadMemberOutPort.findByUsername(command.username)
-            .let {
-                checkValidUsername(it)
-                checkValidPassword(inputPassword = command.password, encodedPassword = it?.password.orEmpty())
-                jwtProvider.generate(it!!)
-            }
+        return checkValidUsername(loadMemberOutPort.findByUsername(command.username))
+            .also { checkValidPassword(inputPassword = command.password, encodedPassword = it.password) }
+            .let { jwtProvider.generate(it) }
     }
 
-    private fun checkValidUsername(member: Member?) {
-        if (member == null) {
-            throw BadRequestException(ResponseCode.LOGIN_FAILED_INVALID_USERNAME_OR_PASSWORD)
-        }
+    private fun checkValidUsername(member: Member?): Member {
+        return member ?: throw BadRequestException(ResponseCode.LOGIN_FAILED_INVALID_USERNAME_OR_PASSWORD)
     }
 
     private fun checkValidPassword(inputPassword: String, encodedPassword: String) {
