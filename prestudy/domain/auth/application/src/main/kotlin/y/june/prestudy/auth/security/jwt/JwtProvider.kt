@@ -6,7 +6,6 @@ import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import y.june.prestudy.auth.FIELD_USERNAME
 import y.june.prestudy.auth.model.Member
 import y.june.prestudy.common.api.ResponseCode
 import y.june.prestudy.common.exception.BadRequestException
@@ -31,7 +30,7 @@ class JwtProvider(
         now: ZonedDateTime = ZonedDateTime.now(),
     ): String {
         return Jwts.builder()
-            .claim(FIELD_USERNAME, member.username)
+            .issuer(member.username)
             .issuedAt(Date.from(now.toInstant()))
             .expiration(Date.from(now.plusSeconds(duration).toInstant()))
             .signWith(key)
@@ -51,8 +50,7 @@ class JwtProvider(
     }
 
     fun getUsername(token: String): String {
-        return parse(token)
-            .get(FIELD_USERNAME, String::class.java)
+        return parse(token).issuer
             ?: throw BadRequestException(ResponseCode.INVALID_JWT)
     }
 
