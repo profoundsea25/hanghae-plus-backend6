@@ -24,7 +24,8 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.multipart.support.MissingServletRequestPartException
 import org.springframework.web.servlet.NoHandlerFoundException
 import org.springframework.web.servlet.resource.NoResourceFoundException
-import y.june.prestudy.common.api.*
+import y.june.prestudy.common.api.Response
+import y.june.prestudy.common.api.ResponseCode
 import y.june.prestudy.common.exception.ApiException
 import y.june.prestudy.common.exception.BadRequestException
 import y.june.prestudy.common.exception.InternalServerException
@@ -39,12 +40,21 @@ class RestApiExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     fun handleGlobalException(e: Throwable): Response<Unit> {
         log.error("Unexpected Error Occurred", e)
-        return internalServerErrorResponse()
-    }
-
-    private fun internalServerErrorResponse(): Response<Unit> {
         return Response(
             responseCode = ResponseCode.INTERNAL_SERVER_ERROR,
+            body = Unit
+        )
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): Response<Unit> {
+        log.warn("Exception About @Valid Occurred", e)
+        return Response(
+            statusCode = ResponseCode.BAD_REQUEST.code,
+            message = e.bindingResult
+                .allErrors
+                .joinToString(" ") { it.defaultMessage.orEmpty() },
             body = Unit
         )
     }
@@ -58,7 +68,6 @@ class RestApiExceptionHandler {
         MissingServletRequestParameterException::class,
         MissingServletRequestPartException::class,
         ServletRequestBindingException::class,
-        MethodArgumentNotValidException::class,
         HandlerMethodValidationException::class,
         NoHandlerFoundException::class,
         NoResourceFoundException::class,
@@ -75,10 +84,6 @@ class RestApiExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleSpringWebExceptions(e: Throwable): Response<Unit> {
         log.warn("Spring Web Exception Occurred", e)
-        return springWebExceptionsResponse(e)
-    }
-
-    private fun springWebExceptionsResponse(e: Throwable): Response<Unit> {
         return Response(
             statusCode = ResponseCode.BAD_REQUEST.code,
             message = e.message.orEmpty(),

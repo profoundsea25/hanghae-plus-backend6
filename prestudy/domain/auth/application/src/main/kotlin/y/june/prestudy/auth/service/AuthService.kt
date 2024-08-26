@@ -47,12 +47,12 @@ class AuthService(
     }
 
     private fun checkValidUsername(member: Member?): Member {
-        return member ?: throw BadRequestException(ResponseCode.LOGIN_FAILED_INVALID_USERNAME_OR_PASSWORD)
+        return member ?: throw BadRequestException(ResponseCode.LOGIN_FAILED_INVALID_USERNAME)
     }
 
     private fun checkValidPassword(inputPassword: String, encodedPassword: String) {
         if (!passwordEncoder.matches(inputPassword, encodedPassword)) {
-            throw BadRequestException(ResponseCode.LOGIN_FAILED_INVALID_USERNAME_OR_PASSWORD)
+            throw BadRequestException(ResponseCode.LOGIN_FAILED_INVALID_PASSWORD)
         }
     }
 }
