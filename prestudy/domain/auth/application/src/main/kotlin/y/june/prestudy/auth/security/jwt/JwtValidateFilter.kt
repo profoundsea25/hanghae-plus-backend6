@@ -39,15 +39,15 @@ class JwtValidateFilter(
         filterChain.doFilter(request, response)
     }
 
-    private fun extractToken(bearerToken: String?): String {
-        return validateAuthorizationHeaderStartsWithBearer(bearerToken).removePrefix(BEARER_PREFIX)
-    }
+}
 
-    private fun validateAuthorizationHeaderStartsWithBearer(bearerToken: String?): String {
-        if (bearerToken == null || !bearerToken.startsWith(BEARER_PREFIX)) {
-            throw BadRequestException(ResponseCode.UNAUTHORIZED)
-        }
-        return bearerToken
-    }
+fun extractToken(bearerToken: String?): String {
+    return validateAuthorizationHeaderStartsWithBearer(bearerToken).removePrefix(BEARER_PREFIX)
+}
 
+private fun validateAuthorizationHeaderStartsWithBearer(bearerToken: String?): String {
+    if (bearerToken == null || !bearerToken.startsWith(BEARER_PREFIX)) {
+        throw BadRequestException(ResponseCode.UNAUTHORIZED)
+    }
+    return bearerToken
 }
