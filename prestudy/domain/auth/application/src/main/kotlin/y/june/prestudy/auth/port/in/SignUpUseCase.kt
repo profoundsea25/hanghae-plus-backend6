@@ -8,9 +8,9 @@ interface SignUpUseCase {
 }
 
 data class SignUpCommand(
-    @field:Pattern(regexp = "^[a-z0-9]{4,10}$", message = "사용자이름은 4~10자, 알파벳 소문자와 숫자로만 구성할 수 있습니다.")
+    @field:Pattern(regexp = USERNAME_REGEX, message = USERNAME_VIOLATION_MESSAGE)
     val username: String,
-    @field:Pattern(regexp = "^[a-zA-Z0-9]{8,15}$", message = "비밀번호는 8~15자, 알파벳 대소문자와 숫자로만 구성할 수 있습니다.")
+    @field:Pattern(regexp = PASSWORD_REGEX, message = PASSWORD_VIOLATION_MESSAGE)
     val password: String,
     val role: Role,
 )
