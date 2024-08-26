@@ -2,7 +2,7 @@
 - 게시판 만들기
 
 ### Architecture
-- 클린 아키텍처 적용
+- 기본적으로 클린 아키텍처 적용
 - 모듈 설명
   - `bootstrap` : 스프링 애플리케이션 구동 모듈
   - `common` : 도메인 모듈에 공통적으로 사용하는 클래스를 모은 모듈
@@ -16,6 +16,8 @@
 - Spring Boot 3.3.2
   - Spring Web
   - Spring Data JPA
+  - Spring Security
+- JWT
 
 ### UseCase
 - 각 모듈별 http 파일 참조 (.http 파일 검색)

@@ -5,6 +5,9 @@ dependencies {
     implementation(project(":domain:post:post-application"))
     implementation(project(":domain:post:post-adapter-in"))
     implementation(project(":domain:post:post-adapter-out"))
+    implementation(project(":domain:auth:auth-application"))
+    implementation(project(":domain:auth:auth-adapter-in"))
+    implementation(project(":domain:auth:auth-adapter-out"))
 }
 
 tasks.getByName<BootJar>("bootJar") {

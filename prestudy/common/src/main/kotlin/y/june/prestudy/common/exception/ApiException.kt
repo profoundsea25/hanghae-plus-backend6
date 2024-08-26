@@ -11,7 +11,7 @@ sealed class ApiException(
 
 class BadRequestException(
     status: ResponseCode = ResponseCode.BAD_REQUEST,
-    message: String = ResponseCode.BAD_REQUEST.message,
+    message: String = status.message,
     cause: Throwable? = null,
 ) : ApiException(
     status = status,
@@ -21,7 +21,7 @@ class BadRequestException(
 
 class InternalServerException(
     status: ResponseCode = ResponseCode.INTERNAL_SERVER_ERROR,
-    message: String = ResponseCode.INTERNAL_SERVER_ERROR.message,
+    message: String = status.message,
     cause: Throwable? = null,
 ) : ApiException(
     status = status,

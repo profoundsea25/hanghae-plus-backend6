@@ -5,7 +5,7 @@ import y.june.prestudy.post.model.Post
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "TEST_POST")
+@Table(name = "POST")
 class PostJpaEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

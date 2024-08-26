@@ -1,10 +1,11 @@
 ### 만들기
 POST http://localhost:8080/v1/post/create
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJwYXNzd29yZCI6IiQyYSQxMCRtZ2dIL08yY0d5Q0xFVEpxN3dtVktlMXR4dVZMMGdpVmpDSUhrSmF0VmZKR2ZqUWoxZHpZYSIsInJvbGUiOiJNRU1CRVIiLCJpYXQiOjE3MjQwNjMyMjQsImV4cCI6MTcyNDA2NjgyNH0.rJTWBDSomMx66mPy2UdD9lYY8yIpagFoAf33z9HOkuY2ldgv7Eb1wG460kh-GcfqjEo7qmPhs0W9rd6ZJF24og
 
 {
   "title": "테스트 제목",
-  "author": "테스트 글쓴이",
+  "author": "test",
   "content": "테스트 내용",
   "password": "test"
 }
