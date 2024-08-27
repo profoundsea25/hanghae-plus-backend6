@@ -3,7 +3,7 @@ package y.june.prestudy.common
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-const val defaultDateTimeFormatPattern = "yyyyMMdd HH:mm:ss"
+const val defaultDateTimeFormatPattern = "yyyy-MM-dd HH:mm:ss"
 val defaultDateTimeFormat: DateTimeFormatter =
     DateTimeFormatter.ofPattern(defaultDateTimeFormatPattern)
 
