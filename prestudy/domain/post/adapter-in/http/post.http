@@ -10,7 +10,17 @@ Authorization: {{authorizationHeader}}
   "password": "test"
 }
 
-### 선택한 게시글 조회
+### 선택 게시글 조회
 GET http://localhost:8080/v1/post/1
 Content-Type: application/json
 Authorization: {{authorizationHeader}}
+
+### 선택 게시글 삭제
+POST http://localhost:8080/v1/post/delete
+Content-Type: application/json
+Authorization: {{authorizationHeader}}
+
+{
+  "postId": 1,
+  "password": "test"
+}

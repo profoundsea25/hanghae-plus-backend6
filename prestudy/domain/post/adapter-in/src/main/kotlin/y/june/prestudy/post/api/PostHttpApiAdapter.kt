@@ -9,6 +9,7 @@ import y.june.prestudy.post.port.`in`.*
 class PostHttpApiAdapter(
     private val createPostUseCase: CreatePostUseCase,
     private val findOnePostUseCase: FindOnePostUseCase,
+    private val deletePostUseCase: DeletePostUseCase,
 ) {
     @PostMapping("/v1/post/create")
     fun create(@RequestBody command: CreatePostCommand): Response<CreatePostPresentation> {
@@ -18,5 +19,10 @@ class PostHttpApiAdapter(
     @GetMapping("/v1/post/{postId}")
     fun findOne(@PathVariable postId: Long): Response<FindOnePostPresentation> {
         return ok(findOnePostUseCase.findOne(postId))
+    }
+
+    @PostMapping("/v1/post/delete")
+    fun delete(@RequestBody command: DeletePostCommand): Response<Unit> {
+        return ok(deletePostUseCase.delete(command))
     }
 }

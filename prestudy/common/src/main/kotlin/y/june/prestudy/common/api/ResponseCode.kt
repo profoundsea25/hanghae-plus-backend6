@@ -18,5 +18,6 @@ enum class ResponseCode(
     LOGIN_FAILED_INVALID_PASSWORD("400", "유저명 혹은 비밀번호가 틀렸습니다."),
 
     // post
-    NOT_FOUND_POST("404", "해당하는 게시글이 존재하지 않습니다.")
+    NOT_FOUND_POST("404", "해당하는 게시글이 존재하지 않습니다."),
+    INCORRECT_POST_PASSWORD("400", "게시글의 비밀번호가 틀립니다.")
 }
