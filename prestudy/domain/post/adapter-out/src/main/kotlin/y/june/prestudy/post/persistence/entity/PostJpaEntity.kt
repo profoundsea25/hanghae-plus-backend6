@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 class PostJpaEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0,
     val author: String,
     val title: String,
     val password: String,

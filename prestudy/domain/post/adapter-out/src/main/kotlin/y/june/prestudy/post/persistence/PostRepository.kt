@@ -10,6 +10,8 @@ class PostRepository(
     private val postJpaRepository: PostJpaRepository
 ) : CreatePostOutPort {
     override fun create(post: Post): Post {
-        return postJpaRepository.save(PostJpaEntity.from(post)).toModel()
+        return PostJpaEntity.from(post)
+            .let { postJpaRepository.save(it) }
+            .toModel()
     }
 }

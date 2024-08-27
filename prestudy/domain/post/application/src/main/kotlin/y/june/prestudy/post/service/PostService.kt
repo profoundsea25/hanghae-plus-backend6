@@ -1,7 +1,8 @@
 package y.june.prestudy.post.service
 
 import org.springframework.stereotype.Service
-import y.june.prestudy.post.model.Post
+import y.june.prestudy.post.port.`in`.CreatePostCommand
+import y.june.prestudy.post.port.`in`.CreatePostPresentation
 import y.june.prestudy.post.port.`in`.CreatePostUseCase
 import y.june.prestudy.post.port.out.CreatePostOutPort
 
@@ -9,7 +10,8 @@ import y.june.prestudy.post.port.out.CreatePostOutPort
 class PostService(
     private val createPostOutPort: CreatePostOutPort
 ): CreatePostUseCase {
-    override fun create(post: Post): Post {
-        return createPostOutPort.create(post)
+    override fun create(command: CreatePostCommand): CreatePostPresentation {
+        return createPostOutPort.create(command.toModel())
+            .let { CreatePostPresentation.from(it) }
     }
 }

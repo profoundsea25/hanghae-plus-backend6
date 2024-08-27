@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import y.june.prestudy.common.api.Response
 import y.june.prestudy.common.api.ok
+import y.june.prestudy.post.port.`in`.CreatePostCommand
+import y.june.prestudy.post.port.`in`.CreatePostPresentation
 import y.june.prestudy.post.port.`in`.CreatePostUseCase
 
 @RestController
@@ -13,12 +15,6 @@ class PostHttpApiAdapter(
 ) {
     @PostMapping("/v1/post/create")
     fun create(@RequestBody command: CreatePostCommand): Response<CreatePostPresentation> {
-        return ok(
-            CreatePostPresentation.from(
-                createPostUseCase.create(
-                    command.toModel()
-                )
-            )
-        )
+        return ok(createPostUseCase.create(command))
     }
 }
