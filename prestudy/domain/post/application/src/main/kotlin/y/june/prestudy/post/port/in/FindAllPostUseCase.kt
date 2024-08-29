@@ -15,6 +15,7 @@ data class PostPresentation(
     val title: String,
     val content: String,
     val createdAt: String,
+    val updatedAt: String,
 ) {
     companion object {
         fun from(post: Post): PostPresentation {
@@ -24,6 +25,7 @@ data class PostPresentation(
                 title = post.title,
                 content = post.content,
                 createdAt = post.createdAt.toDefaultFormat(),
+                updatedAt = post.updatedAt.toDefaultFormat(),
             )
         }
     }

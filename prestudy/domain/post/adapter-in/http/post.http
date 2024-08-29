@@ -30,3 +30,16 @@ Authorization: {{authorizationHeader}}
 GET http://localhost:8080/v1/post/all
 Content-Type: application/json
 Authorization: {{authorizationHeader}}
+
+### 선택 게시글 수정
+POST http://localhost:8080/v1/post/update
+Content-Type: application/json
+Authorization: {{authorizationHeader}}
+
+{
+  "postId": 1,
+  "title": "테스트 수정 제목",
+  "author": "test 수정",
+  "content": "테스트 수정 내용",
+  "password": "test"
+}

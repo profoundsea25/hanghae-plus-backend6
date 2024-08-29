@@ -13,6 +13,7 @@ class PostHttpApiAdapter(
     private val findOnePostUseCase: FindOnePostUseCase,
     private val deletePostUseCase: DeletePostUseCase,
     private val finAllPostUseCase: FinAllPostUseCase,
+    private val updatePostUseCase: UpdatePostUseCase,
 ) {
     @PostMapping("/v1/post/create")
     fun create(@RequestBody command: CreatePostCommand): Response<CreatePostPresentation> {
@@ -37,5 +38,10 @@ class PostHttpApiAdapter(
         @RequestParam(required = false) orderBy: String = "createdAt",
     ): Response<PageWrapper<PostPresentation>> {
         return ok(finAllPostUseCase.findAll(PageQuery(pageNo, pageSize, sort, orderBy)))
+    }
+
+    @PostMapping("/v1/post/update")
+    fun update(@RequestBody command: UpdatePostCommand): Response<UpdatePostPresentation> {
+        return ok(updatePostUseCase.update(command))
     }
 }

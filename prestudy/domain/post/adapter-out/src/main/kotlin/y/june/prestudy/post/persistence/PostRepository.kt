@@ -7,10 +7,7 @@ import y.june.prestudy.common.dto.PageQuery
 import y.june.prestudy.common.dto.PageWrapper
 import y.june.prestudy.post.model.Post
 import y.june.prestudy.post.persistence.entity.PostJpaEntity
-import y.june.prestudy.post.port.out.CreatePostOutPort
-import y.june.prestudy.post.port.out.DeletePostOutPort
-import y.june.prestudy.post.port.out.FindAllPostOutPort
-import y.june.prestudy.post.port.out.FindOnePostOutPort
+import y.june.prestudy.post.port.out.*
 import kotlin.jvm.optionals.getOrNull
 
 @Repository
@@ -19,7 +16,8 @@ class PostRepository(
 ) : CreatePostOutPort,
     FindOnePostOutPort,
     DeletePostOutPort,
-    FindAllPostOutPort {
+    FindAllPostOutPort,
+    UpdatePostOutPort {
     override fun create(post: Post): Post {
         return PostJpaEntity.from(post)
             .let { postJpaRepository.save(it) }
@@ -55,5 +53,11 @@ class PostRepository(
                     hasNext = !this.isLast,
                 )
             }
+    }
+
+    override fun update(post: Post): Post {
+        return PostJpaEntity.from(post)
+            .let { postJpaRepository.save(it) }
+            .toModel()
     }
 }

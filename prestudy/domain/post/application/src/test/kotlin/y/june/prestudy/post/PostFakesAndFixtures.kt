@@ -3,10 +3,7 @@ package y.june.prestudy.post
 import y.june.prestudy.common.dto.PageQuery
 import y.june.prestudy.common.dto.PageWrapper
 import y.june.prestudy.post.model.Post
-import y.june.prestudy.post.port.out.CreatePostOutPort
-import y.june.prestudy.post.port.out.DeletePostOutPort
-import y.june.prestudy.post.port.out.FindAllPostOutPort
-import y.june.prestudy.post.port.out.FindOnePostOutPort
+import y.june.prestudy.post.port.out.*
 import java.time.LocalDateTime
 
 val postFixture1: Post = Post(
@@ -15,7 +12,8 @@ val postFixture1: Post = Post(
     title = "Test Post3",
     password = "testtest1",
     content = "This is test post 1.",
-    createdAt = LocalDateTime.of(2024, 8, 1, 9, 0)
+    createdAt = LocalDateTime.of(2024, 8, 1, 9, 0),
+    updatedAt = LocalDateTime.of(2024, 8, 1, 9, 0),
 )
 
 val fakeCreatePostOutPort: CreatePostOutPort = object : CreatePostOutPort {
@@ -44,5 +42,11 @@ val fakeFindAllPostOutPort: FindAllPostOutPort = object : FindAllPostOutPort {
             pageSize = 10,
             hasNext = false
         )
+    }
+}
+
+val fakeUpdatePostOutPort: UpdatePostOutPort = object : UpdatePostOutPort {
+    override fun update(post: Post): Post {
+        return post
     }
 }

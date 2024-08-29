@@ -7,10 +7,7 @@ import y.june.prestudy.common.dto.PageWrapper
 import y.june.prestudy.common.exception.BadRequestException
 import y.june.prestudy.post.model.Post
 import y.june.prestudy.post.port.`in`.*
-import y.june.prestudy.post.port.out.CreatePostOutPort
-import y.june.prestudy.post.port.out.DeletePostOutPort
-import y.june.prestudy.post.port.out.FindAllPostOutPort
-import y.june.prestudy.post.port.out.FindOnePostOutPort
+import y.june.prestudy.post.port.out.*
 
 @Service
 class PostService(
@@ -18,10 +15,12 @@ class PostService(
     private val findOnePostOutPort: FindOnePostOutPort,
     private val deletePostOutPort: DeletePostOutPort,
     private val findAllPostOutPort: FindAllPostOutPort,
+    private val updatePostOutPort: UpdatePostOutPort,
 ) : CreatePostUseCase,
     FindOnePostUseCase,
     DeletePostUseCase,
-    FinAllPostUseCase {
+    FinAllPostUseCase,
+    UpdatePostUseCase {
     override fun create(command: CreatePostCommand): CreatePostPresentation {
         return createPostOutPort.create(command.toModel())
             .let { CreatePostPresentation.from(it) }
@@ -52,5 +51,12 @@ class PostService(
     override fun findAll(query: PageQuery): PageWrapper<PostPresentation> {
         return findAllPostOutPort.findAll(query)
             .mapResult { PostPresentation.from(it) }
+    }
+
+    override fun update(command: UpdatePostCommand): UpdatePostPresentation {
+        return validatePost(findOnePostOutPort.findOne(command.postId))
+            .also { validatePostPassword(it.password, command.password) }
+            .let { updatePostOutPort.update(command.toModel(it.createdAt)) }
+            .let { UpdatePostPresentation.from(it) }
     }
 }

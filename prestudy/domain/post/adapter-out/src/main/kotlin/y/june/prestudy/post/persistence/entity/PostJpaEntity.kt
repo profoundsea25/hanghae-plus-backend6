@@ -15,6 +15,7 @@ class PostJpaEntity(
     val password: String,
     val content: String,
     val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime,
 ) {
     fun toModel(): Post {
         return Post(
@@ -24,6 +25,7 @@ class PostJpaEntity(
             password = this.password,
             content = this.content,
             createdAt = this.createdAt,
+            updatedAt = this.updatedAt,
         )
     }
 
@@ -36,6 +38,7 @@ class PostJpaEntity(
                 password = post.password,
                 content = post.content,
                 createdAt = post.createdAt,
+                updatedAt = post.updatedAt,
             )
         }
     }

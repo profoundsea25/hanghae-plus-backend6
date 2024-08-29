@@ -13,6 +13,7 @@ data class FindOnePostPresentation(
     val title: String,
     val content: String,
     val createdAt: String,
+    val updatedAt: String,
 ) {
     companion object {
         fun from(post: Post): FindOnePostPresentation {
@@ -22,6 +23,7 @@ data class FindOnePostPresentation(
                 title = post.title,
                 content = post.content,
                 createdAt = post.createdAt.toDefaultFormat(),
+                updatedAt = post.updatedAt.toDefaultFormat(),
             )
         }
     }

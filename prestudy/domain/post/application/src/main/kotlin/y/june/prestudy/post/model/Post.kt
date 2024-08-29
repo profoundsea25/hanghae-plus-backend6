@@ -9,4 +9,5 @@ class Post(
     val password: String,
     val content: String,
     val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime,
 )
