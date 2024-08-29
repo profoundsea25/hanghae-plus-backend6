@@ -3,6 +3,8 @@ package y.june.prestudy.post.api
 import org.springframework.web.bind.annotation.*
 import y.june.prestudy.common.api.Response
 import y.june.prestudy.common.api.ok
+import y.june.prestudy.common.dto.PageQuery
+import y.june.prestudy.common.dto.PageWrapper
 import y.june.prestudy.post.port.`in`.*
 
 @RestController
@@ -10,6 +12,7 @@ class PostHttpApiAdapter(
     private val createPostUseCase: CreatePostUseCase,
     private val findOnePostUseCase: FindOnePostUseCase,
     private val deletePostUseCase: DeletePostUseCase,
+    private val finAllPostUseCase: FinAllPostUseCase,
 ) {
     @PostMapping("/v1/post/create")
     fun create(@RequestBody command: CreatePostCommand): Response<CreatePostPresentation> {
@@ -24,5 +27,15 @@ class PostHttpApiAdapter(
     @PostMapping("/v1/post/delete")
     fun delete(@RequestBody command: DeletePostCommand): Response<Unit> {
         return ok(deletePostUseCase.delete(command))
+    }
+
+    @GetMapping("/v1/post/all")
+    fun findAll(
+        @RequestParam(required = false) pageNo: Int = 0,
+        @RequestParam(required = false) pageSize: Int = 10,
+        @RequestParam(required = false) sort: String = "DESC",
+        @RequestParam(required = false) orderBy: String = "createdAt",
+    ): Response<PageWrapper<PostPresentation>> {
+        return ok(finAllPostUseCase.findAll(PageQuery(pageNo, pageSize, sort, orderBy)))
     }
 }

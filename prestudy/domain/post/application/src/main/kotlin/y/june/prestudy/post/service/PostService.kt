@@ -2,11 +2,14 @@ package y.june.prestudy.post.service
 
 import org.springframework.stereotype.Service
 import y.june.prestudy.common.api.ResponseCode
+import y.june.prestudy.common.dto.PageQuery
+import y.june.prestudy.common.dto.PageWrapper
 import y.june.prestudy.common.exception.BadRequestException
 import y.june.prestudy.post.model.Post
 import y.june.prestudy.post.port.`in`.*
 import y.june.prestudy.post.port.out.CreatePostOutPort
 import y.june.prestudy.post.port.out.DeletePostOutPort
+import y.june.prestudy.post.port.out.FindAllPostOutPort
 import y.june.prestudy.post.port.out.FindOnePostOutPort
 
 @Service
@@ -14,9 +17,11 @@ class PostService(
     private val createPostOutPort: CreatePostOutPort,
     private val findOnePostOutPort: FindOnePostOutPort,
     private val deletePostOutPort: DeletePostOutPort,
+    private val findAllPostOutPort: FindAllPostOutPort,
 ) : CreatePostUseCase,
     FindOnePostUseCase,
-    DeletePostUseCase {
+    DeletePostUseCase,
+    FinAllPostUseCase {
     override fun create(command: CreatePostCommand): CreatePostPresentation {
         return createPostOutPort.create(command.toModel())
             .let { CreatePostPresentation.from(it) }
@@ -42,5 +47,10 @@ class PostService(
         if (foundPassword != requestPassword) {
             throw BadRequestException(ResponseCode.INCORRECT_POST_PASSWORD)
         }
+    }
+
+    override fun findAll(query: PageQuery): PageWrapper<PostPresentation> {
+        return findAllPostOutPort.findAll(query)
+            .mapResult { PostPresentation.from(it) }
     }
 }

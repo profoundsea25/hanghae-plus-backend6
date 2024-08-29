@@ -5,17 +5,15 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import y.june.prestudy.common.api.ResponseCode
 import y.june.prestudy.common.exception.BadRequestException
-import y.june.prestudy.post.fakeCreatePostOutPort
-import y.june.prestudy.post.fakeDeletePostOutPort
-import y.june.prestudy.post.fakeFindOnePostOutPort
+import y.june.prestudy.post.*
 import y.june.prestudy.post.port.`in`.DeletePostCommand
-import y.june.prestudy.post.postFixture
 
 class PostServiceTest : BehaviorSpec({
     val postService = PostService(
         fakeCreatePostOutPort,
         fakeFindOnePostOutPort,
         fakeDeletePostOutPort,
+        fakeFindAllPostOutPort,
     )
 
     Given("게시글 조회 시, 존재하지 않는 게시글 id가 주어지고,") {
@@ -46,7 +44,7 @@ class PostServiceTest : BehaviorSpec({
         When("게시글 id에 해당하는 게시글 비밀번호가 틀린 경우,") {
             Then("비밀번호 미일치 Exception이 발생한다.") {
                 val exception = shouldThrowExactly<BadRequestException> {
-                    postService.delete(command.copy(postId = postFixture.id))
+                    postService.delete(command.copy(postId = postFixture1.id))
                 }
                 exception.status shouldBe ResponseCode.INCORRECT_POST_PASSWORD
             }
