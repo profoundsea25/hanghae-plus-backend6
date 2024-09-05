@@ -108,7 +108,7 @@ class RestApiExceptionHandler {
     private fun apiExceptionResponse(e: ApiException): Response<Unit> {
         return Response(
             statusCode = e.status.code,
-            message = e.status.message,
+            message = e.message,
             body = Unit
         )
     }

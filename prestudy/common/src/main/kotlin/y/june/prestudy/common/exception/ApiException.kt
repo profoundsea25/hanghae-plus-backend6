@@ -4,7 +4,7 @@ import y.june.prestudy.common.api.ResponseCode
 
 sealed class ApiException(
     val status: ResponseCode,
-    override val message: String,
+    override val message: String = status.message,
     override val cause: Throwable?,
 ) : RuntimeException()
 

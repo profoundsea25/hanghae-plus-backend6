@@ -20,7 +20,7 @@ class JwtProviderTest : BehaviorSpec({
         When("토큰을 복호화했을 때,") {
             val result = jwtProvider.getUsername(token)
 
-            Then("username을 정상적으로 반환할 수 있다..") {
+            Then("username을 정상적으로 반환할 수 있다.") {
                 result shouldBe fakeMember.username
             }
         }

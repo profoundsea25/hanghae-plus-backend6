@@ -50,7 +50,7 @@ class AuthServiceTest : BehaviorSpec({
             }
         }
 
-        When("존재하지 않는 사용자 이름이면,") {
+        When("비밀번호가 틀렸을 경우,") {
             val command = LoginCommand(
                 username = fakeUsername,
                 password = fakePassword + "1",
