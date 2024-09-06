@@ -6,7 +6,6 @@ import org.springframework.util.AntPathMatcher
 
 const val HEADER_AUTHORIZATION = "Authorization"
 const val BEARER_PREFIX = "Bearer "
-const val FIELD_USERNAME = "username"
 
 val WHITE_LIST: Array<String> = arrayOf(
     "/v**/sign-up",
