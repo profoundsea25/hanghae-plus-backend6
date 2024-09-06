@@ -3,13 +3,15 @@ package y.june.prestudy.common.dto
 import y.june.prestudy.common.exception.BadRequestException
 
 data class PageQuery(
-    val pageNo: Int,
-    val pageSize: Int,
-    val sort: String,
-    val orderBy: String,
+    val pageNo: Int = 0,
+    val pageSize: Int = 10,
+    val sort: String = DESC,
+    val orderBy: String = "createdAt",
 ) {
     companion object {
-        private val directionSet = setOf("DESC", "ASC")
+        private const val DESC = "DESC"
+        private const val ASC = "ASC"
+        private val directionSet = setOf(DESC, ASC)
     }
 
     init {
