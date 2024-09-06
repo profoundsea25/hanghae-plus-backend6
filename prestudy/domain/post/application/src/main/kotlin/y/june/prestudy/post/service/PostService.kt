@@ -34,18 +34,12 @@ class PostService(
 
     override fun delete(command: DeletePostCommand) {
         validatePost(findOnePostOutPort.findOne(command.postId))
-            .also { validatePostPassword(it.password, command.password) }
+            .also { it.isMatchedPassword(command.password) }
             .also { deletePostOutPort.delete(command.postId) }
     }
 
     private fun validatePost(found: Post?): Post {
         return found ?: throw BadRequestException(ResponseCode.NOT_FOUND_POST)
-    }
-
-    private fun validatePostPassword(foundPassword: String, requestPassword: String) {
-        if (foundPassword != requestPassword) {
-            throw BadRequestException(ResponseCode.INCORRECT_POST_PASSWORD)
-        }
     }
 
     override fun findAll(query: PageQuery): PageWrapper<PostPresentation> {
@@ -55,7 +49,7 @@ class PostService(
 
     override fun update(command: UpdatePostCommand): UpdatePostPresentation {
         return validatePost(findOnePostOutPort.findOne(command.postId))
-            .also { validatePostPassword(it.password, command.password) }
+            .also { it.isMatchedPassword(command.password) }
             .let { updatePostOutPort.update(command.toModel(it.createdAt)) }
             .let { UpdatePostPresentation.from(it) }
     }
