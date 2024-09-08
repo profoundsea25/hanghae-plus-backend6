@@ -1,5 +1,7 @@
 package y.june.prestudy.post.model
 
+import y.june.prestudy.common.api.ResponseCode
+import y.june.prestudy.common.exception.BadRequestException
 import java.time.LocalDateTime
 
 class Post(
@@ -10,4 +12,10 @@ class Post(
     val content: String,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
-)
+) {
+    fun isMatchedPassword(inputPassword: String) {
+        if (this.password != inputPassword) {
+            throw BadRequestException(ResponseCode.INCORRECT_POST_PASSWORD)
+        }
+    }
+}

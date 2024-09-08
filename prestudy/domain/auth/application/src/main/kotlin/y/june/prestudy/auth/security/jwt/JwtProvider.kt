@@ -16,14 +16,14 @@ import javax.crypto.SecretKey
 
 @Component
 class JwtProvider(
-    @Value("\${jwt.secret}")
-    private val secret: String,
+    @Value("\${jwt.salt}")
+    private val salt: String,
     @Value("\${jwt.duration}")
     private val duration: Long,
 ) {
     private val log = logger()
 
-    private val key: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
+    private val key: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(salt))
 
     fun generate(
         member: Member,

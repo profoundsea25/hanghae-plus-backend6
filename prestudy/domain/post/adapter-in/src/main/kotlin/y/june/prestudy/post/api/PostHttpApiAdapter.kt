@@ -31,13 +31,8 @@ class PostHttpApiAdapter(
     }
 
     @GetMapping("/v1/post/all")
-    fun findAll(
-        @RequestParam(required = false) pageNo: Int = 0,
-        @RequestParam(required = false) pageSize: Int = 10,
-        @RequestParam(required = false) sort: String = "DESC",
-        @RequestParam(required = false) orderBy: String = "createdAt",
-    ): Response<PageWrapper<PostPresentation>> {
-        return ok(finAllPostUseCase.findAll(PageQuery(pageNo, pageSize, sort, orderBy)))
+    fun findAll(@ModelAttribute pageQuery: PageQuery): Response<PageWrapper<PostPresentation>> {
+        return ok(finAllPostUseCase.findAll(pageQuery))
     }
 
     @PostMapping("/v1/post/update")

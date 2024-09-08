@@ -12,7 +12,6 @@ class PageQueryTest : BehaviorSpec({
         orderBy = "",
     )
 
-
     Given("PageQuery 객체를 만들 때,") {
         When("pageNo가 0보다 작은 경우,") {
             Then("Exception이 발생한다.") {
