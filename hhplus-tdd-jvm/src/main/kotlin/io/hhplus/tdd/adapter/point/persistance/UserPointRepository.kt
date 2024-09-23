@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class UserPointRepository(
-    private val userPointTable: UserPointTable
+    private val userPointTable: UserPointTable,
 ) : FindUserPointOutPort {
     override fun findBy(id: Long): UserPoint {
         return userPointTable.selectById(id)

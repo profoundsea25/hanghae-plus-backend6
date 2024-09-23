@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/point")
 class PointController(
-    private val userPointService: UserPointService
+    private val userPointService: UserPointService,
 ) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserPointService(
-    private val findUserPointOutPort: FindUserPointOutPort
+    private val findUserPointOutPort: FindUserPointOutPort,
 ) : FindUserPointInPort {
     override fun findBy(id: Long): UserPoint {
         return findUserPointOutPort.findBy(id)

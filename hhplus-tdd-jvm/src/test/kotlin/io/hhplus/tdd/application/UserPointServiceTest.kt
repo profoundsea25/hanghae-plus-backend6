@@ -17,12 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 class UserPointServiceTest {
-
-    private val userPointService = UserPointService(
-        findUserPointOutPort = UserPointRepository(
-            userPointTable = userPointTable
-        )
-    )
+    private val userPointService = UserPointService(UserPointRepository(userPointTable))
 
     companion object {
         private val userPointTable = UserPointTable()
@@ -60,5 +55,4 @@ class UserPointServiceTest {
         assertThat(result.id).isEqualTo(Long.MAX_VALUE)
         assertThat(result.point).isEqualTo(0)
     }
-
 }
