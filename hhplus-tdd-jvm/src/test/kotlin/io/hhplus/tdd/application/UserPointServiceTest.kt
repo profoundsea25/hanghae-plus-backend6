@@ -6,7 +6,7 @@ import io.hhplus.tdd.domain.point.UserPoint
 import io.hhplus.tdd.fixture.USER_POINT_1
 import io.hhplus.tdd.fixture.USER_POINT_2
 import io.hhplus.tdd.fixture.USER_POINT_3
-import io.hhplus.tdd.infrastruture.database.UserPointTable
+import io.hhplus.tdd.infrastructure.database.UserPointTable
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName

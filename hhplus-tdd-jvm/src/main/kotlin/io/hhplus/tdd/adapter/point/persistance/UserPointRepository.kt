@@ -2,7 +2,7 @@ package io.hhplus.tdd.adapter.point.persistance
 
 import io.hhplus.tdd.domain.point.UserPoint
 import io.hhplus.tdd.domain.point.out.FindUserPointOutPort
-import io.hhplus.tdd.infrastruture.database.UserPointTable
+import io.hhplus.tdd.infrastructure.database.UserPointTable
 import org.springframework.stereotype.Repository
 
 @Repository

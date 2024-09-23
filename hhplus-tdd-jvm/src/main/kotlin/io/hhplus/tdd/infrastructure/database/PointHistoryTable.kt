@@ -1,4 +1,4 @@
-package io.hhplus.tdd.infrastruture.database
+package io.hhplus.tdd.infrastructure.database
 
 import io.hhplus.tdd.domain.point.PointHistory
 import io.hhplus.tdd.domain.point.TransactionType
