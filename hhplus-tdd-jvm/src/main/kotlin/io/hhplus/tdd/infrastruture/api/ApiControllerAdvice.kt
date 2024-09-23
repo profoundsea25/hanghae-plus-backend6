@@ -1,4 +1,4 @@
-package io.hhplus.tdd
+package io.hhplus.tdd.infrastruture.api
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
