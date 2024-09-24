@@ -91,4 +91,22 @@ class PointServiceTest {
         assertThat(actualPointHistories.last().type).isEqualTo(TransactionType.CHARGE)
         assertThat(actualPointHistories.last().timeMillis).isEqualTo(actualUserPoint.updateMillis)
     }
+
+    @Test
+    @DisplayName("UserPoint를 사용하면, 사용한 UserPoint 값과 PointHistory를 저장한다.")
+    fun shouldReturnCorrectUserPointWhenUsed() {
+        val inputUserId: Long = 3
+        val inputAmount: Long = 10
+
+        val actualUserPoint: UserPoint = pointService.use(inputUserId, inputAmount)
+        val actualPointHistories: List<PointHistory> = pointService.findAllPointHistoryBy(inputUserId)
+
+        assertThat(actualUserPoint.id).isEqualTo(inputUserId)
+        assertThat(actualUserPoint.point).isEqualTo(USER_POINT_3.point - inputAmount)
+        assertThat(actualPointHistories).hasSize(2)
+        assertThat(actualPointHistories.last().userId).isEqualTo(inputUserId)
+        assertThat(actualPointHistories.last().amount).isEqualTo(inputAmount)
+        assertThat(actualPointHistories.last().type).isEqualTo(TransactionType.USE)
+        assertThat(actualPointHistories.last().timeMillis).isEqualTo(actualUserPoint.updateMillis)
+    }
 }

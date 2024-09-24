@@ -6,6 +6,7 @@ import io.hhplus.tdd.domain.point.UserPoint
 import io.hhplus.tdd.domain.point.`in`.ChargeUserPointInPort
 import io.hhplus.tdd.domain.point.`in`.FindPointHistoryInPort
 import io.hhplus.tdd.domain.point.`in`.FindUserPointInPort
+import io.hhplus.tdd.domain.point.`in`.UseUserPointInPort
 import io.hhplus.tdd.domain.point.out.FindPointHistoryOutPort
 import io.hhplus.tdd.domain.point.out.FindUserPointOutPort
 import io.hhplus.tdd.domain.point.out.SavePointHistoryOutPort
@@ -20,7 +21,8 @@ class PointService(
     private val findPointHistoryOutPort: FindPointHistoryOutPort,
 ) : FindUserPointInPort,
     ChargeUserPointInPort,
-    FindPointHistoryInPort {
+    FindPointHistoryInPort,
+    UseUserPointInPort {
     override fun findUserPointBy(userId: Long): UserPoint {
         return findUserPointOutPort.findBy(userId)
     }
@@ -48,5 +50,26 @@ class PointService(
 
     override fun findAllPointHistoryBy(userId: Long): List<PointHistory> {
         return findPointHistoryOutPort.findAllBy(userId)
+    }
+
+    override fun use(
+        id: Long,
+        amount: Long,
+    ): UserPoint {
+        return findUserPointOutPort.findBy(id)
+            .let {
+                saveUserPointOutPort.save(
+                    id = it.id,
+                    amount = it.point.minus(amount),
+                )
+            }
+            .also {
+                savePointHistoryOutPort.savePointHistory(
+                    id = it.id,
+                    amount = amount,
+                    transactionType = TransactionType.USE,
+                    updateMillis = it.updateMillis,
+                )
+            }
     }
 }
