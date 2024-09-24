@@ -54,8 +54,8 @@ class PointServiceTest {
     @MethodSource("userPointFixtures")
     @DisplayName("데이터베이스에 존재하는 UserPoint를 조회했을 때, 알맞은 id와 point를 반환한다.")
     fun shouldReturnCorrectUserPointWithKnownUser(userPoint: UserPoint) {
-        val actualUserPoint: UserPoint = pointService.findBy(userPoint.id)
-        val actualPointHistory: PointHistory = pointService.findAllBy(userPoint.id).first()
+        val actualUserPoint: UserPoint = pointService.findUserPointBy(userPoint.id)
+        val actualPointHistory: PointHistory = pointService.findAllPointHistoryBy(userPoint.id).first()
 
         assertThat(actualUserPoint.id).isEqualTo(userPoint.id)
         assertThat(actualUserPoint.point).isEqualTo(userPoint.point)
@@ -68,7 +68,7 @@ class PointServiceTest {
     @Test
     @DisplayName("데이터베이스에 존재하지 않는 UserPoint를 조회하면, point는 0이다")
     fun shouldReturn0PointWithUnknownUser() {
-        val result = pointService.findBy(Long.MAX_VALUE)
+        val result = pointService.findUserPointBy(Long.MAX_VALUE)
 
         assertThat(result.id).isEqualTo(Long.MAX_VALUE)
         assertThat(result.point).isEqualTo(0)
@@ -81,7 +81,7 @@ class PointServiceTest {
         val inputAmount: Long = 40
 
         val actualUserPoint: UserPoint = pointService.charge(4, 40)
-        val actualPointHistories: List<PointHistory> = pointService.findAllBy(inputUserId)
+        val actualPointHistories: List<PointHistory> = pointService.findAllPointHistoryBy(inputUserId)
 
         assertThat(actualUserPoint.id).isEqualTo(inputUserId)
         assertThat(actualUserPoint.point).isEqualTo(inputAmount)

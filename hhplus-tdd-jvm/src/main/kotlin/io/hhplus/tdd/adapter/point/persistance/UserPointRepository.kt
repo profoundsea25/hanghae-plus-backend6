@@ -11,8 +11,8 @@ class UserPointRepository(
     private val userPointTable: UserPointTable,
 ) : FindUserPointOutPort,
     ChargeUserPointOutPort {
-    override fun findBy(id: Long): UserPoint {
-        return userPointTable.selectById(id)
+    override fun findBy(userId: Long): UserPoint {
+        return userPointTable.selectById(userId)
     }
 
     override fun charge(

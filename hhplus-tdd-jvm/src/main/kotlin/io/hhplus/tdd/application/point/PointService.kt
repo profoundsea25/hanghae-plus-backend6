@@ -20,8 +20,8 @@ class PointService(
 ) : FindUserPointInPort,
     ChargeUserPointInPort,
     FindPointHistoryInPort {
-    override fun findBy(id: Long): UserPoint {
-        return findUserPointOutPort.findBy(id)
+    override fun findUserPointBy(userId: Long): UserPoint {
+        return findUserPointOutPort.findBy(userId)
     }
 
     override fun charge(
@@ -41,7 +41,7 @@ class PointService(
             }
     }
 
-    override fun findAllBy(userId: Long): List<PointHistory> {
+    override fun findAllPointHistoryBy(userId: Long): List<PointHistory> {
         return findPointHistoryOutPort.findAllBy(userId)
     }
 }
