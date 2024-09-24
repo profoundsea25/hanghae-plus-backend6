@@ -6,7 +6,7 @@ import io.hhplus.tdd.domain.point.out.FindUserPointOutPort
 import org.springframework.stereotype.Service
 
 @Service
-class UserPointService(
+class PointService(
     private val findUserPointOutPort: FindUserPointOutPort,
 ) : FindUserPointInPort {
     override fun findBy(id: Long): UserPoint {

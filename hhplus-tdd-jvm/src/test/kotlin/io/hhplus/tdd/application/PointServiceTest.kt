@@ -1,7 +1,7 @@
 package io.hhplus.tdd.application
 
 import io.hhplus.tdd.adapter.point.persistance.UserPointRepository
-import io.hhplus.tdd.application.point.UserPointService
+import io.hhplus.tdd.application.point.PointService
 import io.hhplus.tdd.domain.point.UserPoint
 import io.hhplus.tdd.fixture.USER_POINT_1
 import io.hhplus.tdd.fixture.USER_POINT_2
@@ -16,8 +16,8 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
-class UserPointServiceTest {
-    private val userPointService = UserPointService(UserPointRepository(userPointTable))
+class PointServiceTest {
+    private val pointService = PointService(UserPointRepository(userPointTable))
 
     companion object {
         private val userPointTable = UserPointTable()
@@ -43,7 +43,7 @@ class UserPointServiceTest {
     @MethodSource("userPointFixtures")
     @DisplayName("데이터베이스에 존재하는 UserPoint를 조회했을 때, 알맞은 id와 point를 반환한다.")
     fun shouldReturnCorrectUserPointWithKnownUser(userPoint: UserPoint) {
-        val result = userPointService.findBy(userPoint.id)
+        val result = pointService.findBy(userPoint.id)
         assertThat(result.id).isEqualTo(userPoint.id)
         assertThat(result.point).isEqualTo(userPoint.point)
     }
@@ -51,7 +51,7 @@ class UserPointServiceTest {
     @Test
     @DisplayName("데이터베이스에 존재하지 않는 UserPoint를 조회하면, point는 0이다")
     fun shouldReturn0PointWithUnknownUser() {
-        val result = userPointService.findBy(Long.MAX_VALUE)
+        val result = pointService.findBy(Long.MAX_VALUE)
         assertThat(result.id).isEqualTo(Long.MAX_VALUE)
         assertThat(result.point).isEqualTo(0)
     }
