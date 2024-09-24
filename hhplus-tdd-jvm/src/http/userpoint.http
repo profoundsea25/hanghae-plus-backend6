@@ -1,2 +1,8 @@
 ### 특정 사용자의 ID로 UserPoint 조회
 GET {{host}}/point/{{id}}
+
+### 특정 사용자의 ID로 UserPoint 충전
+PATCH {{host}}/point/{{id}}/charge
+Content-Type: application/json
+
+10

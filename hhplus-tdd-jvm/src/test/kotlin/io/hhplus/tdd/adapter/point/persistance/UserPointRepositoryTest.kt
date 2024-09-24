@@ -53,4 +53,16 @@ class UserPointRepositoryTest {
         assertThat(result.id).isEqualTo(Long.MAX_VALUE)
         assertThat(result.point).isEqualTo(0)
     }
+
+    @Test
+    @DisplayName("UserPoint를 충전 후 조회하면, 저장한 내용 그대로 출력한다.")
+    fun shouldReturnCorrectUserPointWhenCharged() {
+        val inputId: Long = 4
+        val inputAmount: Long = 40
+
+        val actual: UserPoint = userPointRepository.charge(4, 40)
+
+        assertThat(actual.id).isEqualTo(inputId)
+        assertThat(actual.point).isEqualTo(inputAmount)
+    }
 }
