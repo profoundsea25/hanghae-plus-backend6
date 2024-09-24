@@ -60,7 +60,7 @@ class UserPointRepositoryTest {
         val inputId: Long = 4
         val inputAmount: Long = 40
 
-        val actual: UserPoint = userPointRepository.charge(4, 40)
+        val actual: UserPoint = userPointRepository.save(4, 40)
 
         assertThat(actual.id).isEqualTo(inputId)
         assertThat(actual.point).isEqualTo(inputAmount)

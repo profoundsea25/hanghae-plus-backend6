@@ -28,8 +28,8 @@ class PointServiceTest {
     private val pointService =
         PointService(
             findUserPointOutPort = userPointRepository,
-            chargeUserPointOutPort = userPointRepository,
-            saveChargeUserPointHistoryOutPort = pointHistoryRepository,
+            saveUserPointOutPort = userPointRepository,
+            savePointHistoryOutPort = pointHistoryRepository,
             findPointHistoryOutPort = pointHistoryRepository,
         )
 
@@ -77,18 +77,18 @@ class PointServiceTest {
     @Test
     @DisplayName("UserPoint를 충전하면, 충전된 UserPoint 값과 PointHistory를 저장한다.")
     fun shouldReturnCorrectUserPointWhenCharged() {
-        val inputUserId: Long = 4
-        val inputAmount: Long = 40
+        val inputUserId: Long = 1
+        val inputAmount: Long = 50
 
-        val actualUserPoint: UserPoint = pointService.charge(4, 40)
+        val actualUserPoint: UserPoint = pointService.charge(inputUserId, inputAmount)
         val actualPointHistories: List<PointHistory> = pointService.findAllPointHistoryBy(inputUserId)
 
         assertThat(actualUserPoint.id).isEqualTo(inputUserId)
-        assertThat(actualUserPoint.point).isEqualTo(inputAmount)
-        assertThat(actualPointHistories).hasSize(1)
-        assertThat(actualPointHistories.first().userId).isEqualTo(inputUserId)
-        assertThat(actualPointHistories.first().amount).isEqualTo(inputAmount)
-        assertThat(actualPointHistories.first().type).isEqualTo(TransactionType.CHARGE)
-        assertThat(actualPointHistories.first().timeMillis).isEqualTo(actualUserPoint.updateMillis)
+        assertThat(actualUserPoint.point).isEqualTo(USER_POINT_1.point + inputAmount)
+        assertThat(actualPointHistories).hasSize(2)
+        assertThat(actualPointHistories.last().userId).isEqualTo(inputUserId)
+        assertThat(actualPointHistories.last().amount).isEqualTo(inputAmount)
+        assertThat(actualPointHistories.last().type).isEqualTo(TransactionType.CHARGE)
+        assertThat(actualPointHistories.last().timeMillis).isEqualTo(actualUserPoint.updateMillis)
     }
 }
