@@ -7,10 +7,7 @@ import io.hhplus.tdd.domain.point.`in`.ChargeUserPointInPort
 import io.hhplus.tdd.domain.point.`in`.FindPointHistoryInPort
 import io.hhplus.tdd.domain.point.`in`.FindUserPointInPort
 import io.hhplus.tdd.domain.point.`in`.UseUserPointInPort
-import io.hhplus.tdd.domain.point.out.FindPointHistoryOutPort
-import io.hhplus.tdd.domain.point.out.FindUserPointOutPort
-import io.hhplus.tdd.domain.point.out.SavePointHistoryOutPort
-import io.hhplus.tdd.domain.point.out.SaveUserPointOutPort
+import io.hhplus.tdd.domain.point.out.*
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,6 +16,7 @@ class PointService(
     private val saveUserPointOutPort: SaveUserPointOutPort,
     private val savePointHistoryOutPort: SavePointHistoryOutPort,
     private val findPointHistoryOutPort: FindPointHistoryOutPort,
+    private val lockManager: LockManager,
 ) : FindUserPointInPort,
     ChargeUserPointInPort,
     FindPointHistoryInPort,
@@ -31,18 +29,33 @@ class PointService(
         id: Long,
         amount: Long,
     ): UserPoint {
-        return findUserPointOutPort.findBy(id)
-            .let {
-                saveUserPointOutPort.save(
-                    id = it.id,
-                    amount = it.point.plus(amount),
-                )
-            }
+        val userPoint: UserPoint = findUserPointOutPort.findBy(id)
+        return lockManager.lockWith(userPoint.id) {
+            savePointAndHistory(
+                userPoint = userPoint,
+                transactionType = TransactionType.CHARGE,
+                amount = amount,
+            )
+        }
+    }
+
+    private fun savePointAndHistory(
+        userPoint: UserPoint,
+        transactionType: TransactionType,
+        amount: Long,
+    ): UserPoint {
+        return saveUserPointOutPort.save(
+            userPoint.id,
+            when (transactionType) {
+                TransactionType.CHARGE -> userPoint.point.plus(amount)
+                TransactionType.USE -> userPoint.point.minus(amount)
+            },
+        )
             .also {
                 savePointHistoryOutPort.savePointHistory(
                     id = it.id,
                     amount = amount,
-                    transactionType = TransactionType.CHARGE,
+                    transactionType = transactionType,
                     updateMillis = it.updateMillis,
                 )
             }
@@ -56,20 +69,13 @@ class PointService(
         id: Long,
         amount: Long,
     ): UserPoint {
-        return findUserPointOutPort.findBy(id)
-            .let {
-                saveUserPointOutPort.save(
-                    id = it.id,
-                    amount = it.point.minus(amount),
-                )
-            }
-            .also {
-                savePointHistoryOutPort.savePointHistory(
-                    id = it.id,
-                    amount = amount,
-                    transactionType = TransactionType.USE,
-                    updateMillis = it.updateMillis,
-                )
-            }
+        val userPoint: UserPoint = findUserPointOutPort.findBy(id)
+        return lockManager.lockWith(userPoint.id) {
+            savePointAndHistory(
+                userPoint = userPoint,
+                transactionType = TransactionType.USE,
+                amount = amount,
+            )
+        }
     }
 }

@@ -1,11 +1,13 @@
 package io.hhplus.tdd.application
 
+import io.hhplus.tdd.adapter.point.lock.LockManagerImpl
 import io.hhplus.tdd.adapter.point.persistance.PointHistoryRepository
 import io.hhplus.tdd.adapter.point.persistance.UserPointRepository
 import io.hhplus.tdd.application.point.PointService
 import io.hhplus.tdd.domain.point.PointHistory
 import io.hhplus.tdd.domain.point.TransactionType
 import io.hhplus.tdd.domain.point.UserPoint
+import io.hhplus.tdd.domain.point.out.LockManager
 import io.hhplus.tdd.fixture.USER_POINT_1
 import io.hhplus.tdd.fixture.USER_POINT_2
 import io.hhplus.tdd.fixture.USER_POINT_3
@@ -25,12 +27,14 @@ class PointServiceTest {
     private val pointHistoryTable = PointHistoryTable()
     private val userPointRepository = UserPointRepository(userPointTable)
     private val pointHistoryRepository = PointHistoryRepository(pointHistoryTable)
+    private val lockManager: LockManager = LockManagerImpl()
     private val pointService =
         PointService(
             findUserPointOutPort = userPointRepository,
             saveUserPointOutPort = userPointRepository,
             savePointHistoryOutPort = pointHistoryRepository,
             findPointHistoryOutPort = pointHistoryRepository,
+            lockManager = lockManager,
         )
 
     companion object {
