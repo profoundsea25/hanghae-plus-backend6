@@ -1,117 +1,194 @@
 package io.hhplus.tdd.application
 
-import io.hhplus.tdd.adapter.point.lock.LockManagerImpl
-import io.hhplus.tdd.adapter.point.persistance.PointHistoryRepository
-import io.hhplus.tdd.adapter.point.persistance.UserPointRepository
+import io.hhplus.tdd.any
 import io.hhplus.tdd.application.point.PointService
 import io.hhplus.tdd.domain.point.PointHistory
 import io.hhplus.tdd.domain.point.TransactionType
-import io.hhplus.tdd.domain.point.UserPoint
-import io.hhplus.tdd.domain.point.out.LockManager
+import io.hhplus.tdd.domain.point.exception.BusinessLogicException
+import io.hhplus.tdd.domain.point.exception.ErrorMessage
+import io.hhplus.tdd.domain.point.out.FindPointHistoryOutPort
+import io.hhplus.tdd.domain.point.out.FindUserPointOutPort
+import io.hhplus.tdd.domain.point.out.SavePointHistoryOutPort
+import io.hhplus.tdd.domain.point.out.SaveUserPointOutPort
+import io.hhplus.tdd.fake.FakeLockManger
 import io.hhplus.tdd.fixture.USER_POINT_1
-import io.hhplus.tdd.fixture.USER_POINT_2
-import io.hhplus.tdd.fixture.USER_POINT_3
-import io.hhplus.tdd.infrastructure.database.PointHistoryTable
-import io.hhplus.tdd.infrastructure.database.UserPointTable
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
-import java.util.stream.Stream
+import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito.*
 
 class PointServiceTest {
-    private val userPointTable = UserPointTable()
-    private val pointHistoryTable = PointHistoryTable()
-    private val userPointRepository = UserPointRepository(userPointTable)
-    private val pointHistoryRepository = PointHistoryRepository(pointHistoryTable)
-    private val lockManager: LockManager = LockManagerImpl()
+    private val findUserPointOutPort = mock(FindUserPointOutPort::class.java)
+    private val saveUserPointOutPort = mock(SaveUserPointOutPort::class.java)
+    private val savePointHistoryOutPort = mock(SavePointHistoryOutPort::class.java)
+    private val findPointHistoryOutPort = mock(FindPointHistoryOutPort::class.java)
     private lateinit var pointService: PointService
-
-    companion object {
-        @JvmStatic
-        private fun userPointFixtures(): Stream<Arguments> =
-            Stream.of(
-                Arguments.of(USER_POINT_1),
-                Arguments.of(USER_POINT_2),
-                Arguments.of(USER_POINT_3),
-            )
-    }
 
     @BeforeEach
     fun beforeEach() {
         pointService =
             PointService(
-                findUserPointOutPort = userPointRepository,
-                saveUserPointOutPort = userPointRepository,
-                savePointHistoryOutPort = pointHistoryRepository,
-                findPointHistoryOutPort = pointHistoryRepository,
-                lockManager = lockManager,
+                findUserPointOutPort = findUserPointOutPort,
+                saveUserPointOutPort = saveUserPointOutPort,
+                savePointHistoryOutPort = savePointHistoryOutPort,
+                findPointHistoryOutPort = findPointHistoryOutPort,
+                lockManager = FakeLockManger(),
             )
-        pointService.charge(USER_POINT_1.id, USER_POINT_1.point)
-        pointService.charge(USER_POINT_2.id, USER_POINT_2.point)
-        pointService.charge(USER_POINT_3.id, USER_POINT_3.point)
-    }
-
-    @ParameterizedTest
-    @MethodSource("userPointFixtures")
-    @DisplayName("데이터베이스에 존재하는 UserPoint를 조회했을 때, 알맞은 id와 point를 반환한다.")
-    fun shouldReturnCorrectUserPointWithKnownUser(userPoint: UserPoint) {
-        val actualUserPoint: UserPoint = pointService.findUserPointBy(userPoint.id)
-        val actualPointHistory: PointHistory = pointService.findAllPointHistoryBy(userPoint.id).first()
-
-        assertThat(actualUserPoint.id).isEqualTo(userPoint.id)
-        assertThat(actualUserPoint.point).isEqualTo(userPoint.point)
-        assertThat(actualPointHistory.id).isEqualTo(userPoint.id)
-        assertThat(actualPointHistory.amount).isEqualTo(userPoint.point)
-        assertThat(actualPointHistory.type).isEqualTo(TransactionType.CHARGE)
-        assertThat(actualPointHistory.timeMillis).isEqualTo(actualUserPoint.updateMillis)
     }
 
     @Test
-    @DisplayName("데이터베이스에 존재하지 않는 UserPoint를 조회하면, point는 0이다")
-    fun shouldReturn0PointWithUnknownUser() {
-        val result = pointService.findUserPointBy(Long.MAX_VALUE)
+    @DisplayName("정상적인 포인트 충전을 수행하면, UserPoint와 PointHistory를 저장 메서드를 한 번씩 호출한다.")
+    fun shouldCallOnceSavePointMethodAndSaveHistoryMethodWhenValidCharging() {
+        val inputChargeAmount = 10L
+        val expected = USER_POINT_1.copy(point = USER_POINT_1.point + inputChargeAmount)
 
-        assertThat(result.id).isEqualTo(Long.MAX_VALUE)
-        assertThat(result.point).isEqualTo(0)
+        `when`(findUserPointOutPort.findBy(anyLong()))
+            .thenReturn(USER_POINT_1)
+        `when`(
+            saveUserPointOutPort.save(
+                anyLong(),
+                anyLong(),
+            ),
+        )
+            .thenReturn(expected)
+        `when`(
+            savePointHistoryOutPort.savePointHistory(
+                anyLong(),
+                anyLong(),
+                any(TransactionType::class.java),
+                anyLong(),
+            ),
+        )
+            .thenReturn(
+                PointHistory(
+                    id = 1,
+                    userId = expected.id,
+                    type = TransactionType.CHARGE,
+                    amount = inputChargeAmount,
+                    timeMillis = expected.updateMillis,
+                ),
+            )
+
+        pointService.charge(USER_POINT_1.id, inputChargeAmount)
+
+        verify(saveUserPointOutPort, times(1))
+            .save(
+                id = expected.id,
+                amount = expected.point,
+            )
+        verify(savePointHistoryOutPort, times(1))
+            .savePointHistory(
+                id = expected.id,
+                amount = inputChargeAmount,
+                transactionType = TransactionType.CHARGE,
+                updateMillis = expected.updateMillis,
+            )
     }
 
     @Test
-    @DisplayName("UserPoint를 충전하면, 충전된 UserPoint 값과 PointHistory를 저장한다.")
-    fun shouldReturnCorrectUserPointWhenCharged() {
-        val inputUserId: Long = 1
-        val inputAmount: Long = 50
+    @DisplayName("정상적인 포인트 사용을 수행하면, UserPoint와 PointHistory를 저장 메서드를 한 번씩 호출한다.")
+    fun shouldCallOnceSavePointMethodAndSaveHistoryMethodWhenValidUsing() {
+        val inputUseAmount = 10L
+        val expected = USER_POINT_1.copy(point = USER_POINT_1.point - inputUseAmount)
 
-        val actualUserPoint: UserPoint = pointService.charge(inputUserId, inputAmount)
-        val actualPointHistories: List<PointHistory> = pointService.findAllPointHistoryBy(inputUserId)
+        `when`(findUserPointOutPort.findBy(anyLong()))
+            .thenReturn(USER_POINT_1)
+        `when`(
+            saveUserPointOutPort.save(
+                anyLong(),
+                anyLong(),
+            ),
+        )
+            .thenReturn(expected)
+        `when`(
+            savePointHistoryOutPort.savePointHistory(
+                anyLong(),
+                anyLong(),
+                any(TransactionType::class.java),
+                anyLong(),
+            ),
+        )
+            .thenReturn(
+                PointHistory(
+                    id = 1,
+                    userId = expected.id,
+                    type = TransactionType.USE,
+                    amount = inputUseAmount,
+                    timeMillis = expected.updateMillis,
+                ),
+            )
 
-        assertThat(actualUserPoint.id).isEqualTo(inputUserId)
-        assertThat(actualUserPoint.point).isEqualTo(USER_POINT_1.point + inputAmount)
-        assertThat(actualPointHistories).hasSize(2)
-        assertThat(actualPointHistories.last().userId).isEqualTo(inputUserId)
-        assertThat(actualPointHistories.last().amount).isEqualTo(inputAmount)
-        assertThat(actualPointHistories.last().type).isEqualTo(TransactionType.CHARGE)
-        assertThat(actualPointHistories.last().timeMillis).isEqualTo(actualUserPoint.updateMillis)
+        pointService.use(USER_POINT_1.id, inputUseAmount)
+
+        verify(saveUserPointOutPort, times(1))
+            .save(
+                id = expected.id,
+                amount = expected.point,
+            )
+        verify(savePointHistoryOutPort, times(1))
+            .savePointHistory(
+                id = expected.id,
+                amount = inputUseAmount,
+                transactionType = TransactionType.USE,
+                updateMillis = expected.updateMillis,
+            )
     }
 
     @Test
-    @DisplayName("UserPoint를 사용하면, 사용한 UserPoint 값과 PointHistory를 저장한다.")
-    fun shouldReturnCorrectUserPointWhenUsed() {
-        val inputUserId: Long = 3
-        val inputAmount: Long = 10
+    @DisplayName("5000000 이상 충전을 하려고 하면, UserPoint 저장 메서드와 PointHistory 저장 메서드가 호출되지 않는다.")
+    fun shouldNotCallSaveUserPointMethodAndSavePointHistoryMethodWhenOverCharging() {
+        val inputChargeAmount = 5_000_000L
 
-        val actualUserPoint: UserPoint = pointService.use(inputUserId, inputAmount)
-        val actualPointHistories: List<PointHistory> = pointService.findAllPointHistoryBy(inputUserId)
+        `when`(findUserPointOutPort.findBy(anyLong()))
+            .thenReturn(USER_POINT_1)
 
-        assertThat(actualUserPoint.id).isEqualTo(inputUserId)
-        assertThat(actualUserPoint.point).isEqualTo(USER_POINT_3.point - inputAmount)
-        assertThat(actualPointHistories).hasSize(2)
-        assertThat(actualPointHistories.last().userId).isEqualTo(inputUserId)
-        assertThat(actualPointHistories.last().amount).isEqualTo(inputAmount)
-        assertThat(actualPointHistories.last().type).isEqualTo(TransactionType.USE)
-        assertThat(actualPointHistories.last().timeMillis).isEqualTo(actualUserPoint.updateMillis)
+        val exception =
+            assertThrows<BusinessLogicException> {
+                pointService.charge(USER_POINT_1.id, inputChargeAmount)
+            }
+
+        assertThat(exception.errorMessage).isEqualTo(ErrorMessage.OVER_CHARGING_POINT)
+        verify(saveUserPointOutPort, never())
+            .save(
+                id = anyLong(),
+                amount = anyLong(),
+            )
+        verify(savePointHistoryOutPort, never())
+            .savePointHistory(
+                id = anyLong(),
+                amount = anyLong(),
+                transactionType = any(TransactionType::class.java),
+                updateMillis = anyLong(),
+            )
+    }
+
+    @Test
+    @DisplayName("남은 포인트가 0보다 작게 사용하려고 하면, UserPoint 저장 메서드와 PointHistory 저장 메서드가 호출되지 않는다.")
+    fun shouldNotCallSaveUserPointMethodAndSavePointHistoryMethodWhenOverUsing() {
+        val inputUseAmount = 100L
+
+        `when`(findUserPointOutPort.findBy(anyLong()))
+            .thenReturn(USER_POINT_1)
+
+        val exception =
+            assertThrows<BusinessLogicException> {
+                pointService.use(USER_POINT_1.id, inputUseAmount)
+            }
+
+        assertThat(exception.errorMessage).isEqualTo(ErrorMessage.OVER_USING_POINT)
+        verify(saveUserPointOutPort, never())
+            .save(
+                id = anyLong(),
+                amount = anyLong(),
+            )
+        verify(savePointHistoryOutPort, never())
+            .savePointHistory(
+                id = anyLong(),
+                amount = anyLong(),
+                transactionType = any(TransactionType::class.java),
+                updateMillis = anyLong(),
+            )
     }
 }
