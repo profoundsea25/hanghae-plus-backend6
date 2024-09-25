@@ -28,14 +28,7 @@ class PointServiceTest {
     private val userPointRepository = UserPointRepository(userPointTable)
     private val pointHistoryRepository = PointHistoryRepository(pointHistoryTable)
     private val lockManager: LockManager = LockManagerImpl()
-    private val pointService =
-        PointService(
-            findUserPointOutPort = userPointRepository,
-            saveUserPointOutPort = userPointRepository,
-            savePointHistoryOutPort = pointHistoryRepository,
-            findPointHistoryOutPort = pointHistoryRepository,
-            lockManager = lockManager,
-        )
+    private lateinit var pointService: PointService
 
     companion object {
         @JvmStatic
@@ -49,6 +42,14 @@ class PointServiceTest {
 
     @BeforeEach
     fun beforeEach() {
+        pointService =
+            PointService(
+                findUserPointOutPort = userPointRepository,
+                saveUserPointOutPort = userPointRepository,
+                savePointHistoryOutPort = pointHistoryRepository,
+                findPointHistoryOutPort = pointHistoryRepository,
+                lockManager = lockManager,
+            )
         pointService.charge(USER_POINT_1.id, USER_POINT_1.point)
         pointService.charge(USER_POINT_2.id, USER_POINT_2.point)
         pointService.charge(USER_POINT_3.id, USER_POINT_3.point)

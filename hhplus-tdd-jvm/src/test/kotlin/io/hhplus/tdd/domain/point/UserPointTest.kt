@@ -1,7 +1,9 @@
 package io.hhplus.tdd.domain.point
 
 import io.hhplus.tdd.domain.point.exception.BusinessLogicException
+import io.hhplus.tdd.domain.point.exception.ErrorMessage
 import io.hhplus.tdd.fixture.USER_POINT_1
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrowsExactly
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -36,9 +38,11 @@ class UserPointTest {
     @DisplayName("UserPoint 값이 5_000_000L보다 크게 충전하려고 하면, Exception이 발생한다.")
     @CsvSource("4999991,4999992,5000000")
     fun shouldThrowExceptionWhenOverCharging(amount: Long) {
-        assertThrowsExactly(BusinessLogicException::class.java) {
-            USER_POINT_1.doTransaction(TransactionType.CHARGE, amount)
-        }
+        val exception =
+            assertThrowsExactly(BusinessLogicException::class.java) {
+                USER_POINT_1.doTransaction(TransactionType.CHARGE, amount)
+            }
+        assertThat(exception.errorMessage).isEqualTo(ErrorMessage.OVER_CHARGING_POINT)
     }
 
     @ParameterizedTest
@@ -52,8 +56,10 @@ class UserPointTest {
     @DisplayName("남은 UserPoint 값이 0보다 작게 사용하려고 하면, Exception이 발생한다.")
     @CsvSource("11,12,100")
     fun shouldThrowExceptionWhenOverUsing(amount: Long) {
-        assertThrowsExactly(BusinessLogicException::class.java) {
-            USER_POINT_1.doTransaction(TransactionType.USE, amount)
-        }
+        val exception =
+            assertThrowsExactly(BusinessLogicException::class.java) {
+                USER_POINT_1.doTransaction(TransactionType.USE, amount)
+            }
+        assertThat(exception.errorMessage).isEqualTo(ErrorMessage.OVER_USING_POINT)
     }
 }
