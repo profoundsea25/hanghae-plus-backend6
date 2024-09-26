@@ -29,10 +29,9 @@ class PointService(
         id: Long,
         amount: Long,
     ): UserPoint {
-        val userPoint: UserPoint = findUserPointOutPort.findBy(id)
-        return lockManager.lockWith(userPoint.id) {
+        return lockManager.lockWith(id) {
             savePointTransactionAndHistory(
-                userPoint = userPoint,
+                userPoint = findUserPointOutPort.findBy(id),
                 transactionType = TransactionType.CHARGE,
                 amount = amount,
             )
@@ -66,10 +65,9 @@ class PointService(
         id: Long,
         amount: Long,
     ): UserPoint {
-        val userPoint: UserPoint = findUserPointOutPort.findBy(id)
-        return lockManager.lockWith(userPoint.id) {
+        return lockManager.lockWith(id) {
             savePointTransactionAndHistory(
-                userPoint = userPoint,
+                userPoint = findUserPointOutPort.findBy(id),
                 transactionType = TransactionType.USE,
                 amount = amount,
             )
